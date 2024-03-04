@@ -191,7 +191,7 @@ def main():
         st.write(f"Please provide a valid input!")
 
     # Display a button to submit the form
-    if st.sidebar.button("Submit"):
+    if st.button("Submit"):
         st.success("We are looking at your credit history!")
 
         probabilities = [0.7, 0.1, 0.05, 0.05,0.05,0.05]
