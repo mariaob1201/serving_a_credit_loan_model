@@ -158,7 +158,7 @@ def main():
     # Page title
 
     # Add a JPG image to the Streamlit app
-    image_path = "images.png"
+    image_path = "ninja.png"
     st.image(image_path, caption='Credit Ninja', use_column_width=True)
 
     st.title("Credit Ninja")
