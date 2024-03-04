@@ -159,7 +159,7 @@ def main():
 
     # Add a JPG image to the Streamlit app
     image_path = "ninja.png"
-    st.image(image_path, caption='CreditN', use_column_width=True)
+    st.image(image_path, caption='CreditN', use_column_width=False)
 
     st.title("CreditN")
     
@@ -198,9 +198,9 @@ def main():
         # Display a button to submit the form
     if loanamount>0:
         if st.button("Submit"):
-            st.success("We are looking at your credit history!")
+            st.write("We are looking at your credit history!")
 
-            probabilities = [0.7, 0.1, 0.05, 0.05,0.05,0.05]
+            probabilities = [0.6, 0.2, 0.05, 0.05,0.05,0.05]
 
             # Use random.choices to select a value based on the probabilities
             inquiries = random.choices([0, 1, 2, 3,5,7], weights=probabilities)[0]
@@ -211,7 +211,8 @@ def main():
                 ficoscore = random.randint(690, 720)
             else:
                 ficoscore = random.randint(720, 850)
-            credit_score_months = random.randint(37, 852)
+            credit_score_months = random.randint(37, 50)
+         
             user_input = {'term': term,
                           "last_fico_range_high": ficoscore,
                           "months_since_earliest_cr_line": credit_score_months,
