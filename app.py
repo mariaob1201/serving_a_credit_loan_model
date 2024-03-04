@@ -162,18 +162,18 @@ def main():
     st.image(image_path, caption='Credit Ninja', use_column_width=True)
 
     st.title("Credit Ninja")
+    
+
+    st.sidebar.title("Form:")
+
+    # User input for name
+    name = st.sidebar.text_input("What's your name?:")
     st.write(f"Hello, {name}, welcome to our site!")
     msg = "Welcome to credit ninja platform were we evaluate your request for an installment credit in the matter of minutes." \
           " We will utilize the fico score as one of our predictive inputs. No sociodemographic data is used in this evaluation " \
           "but just as informative for a better experience of our clients."
 
     st.write(f"{msg}")
-
-    st.sidebar.title("Form:")
-
-    # User input for name
-    name = st.sidebar.text_input("What's your name?:")
-
 
     # User input for loan term
     loan_term = st.sidebar.slider("Select loan term (in months):", 12, 60, 36)
