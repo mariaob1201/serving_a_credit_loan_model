@@ -110,7 +110,7 @@ def evaluating(user_input):
     credit_score = base_score + (scaling_factor * logit_score)
 
     print(f"User input {user_input}")
-    print(f"Credit-ninja Score: {credit_score:.2f}")
+    print(f"CN Score: {credit_score:.2f}")
     print(f"Probability of default: {probability:.4f}")
     print(f"logit_score: {logit_score:.4f}")
 
@@ -141,7 +141,7 @@ def custom_output(results):
     st.write(f"Number of Credit Inquiries in the Last 12 Months: {credit_inquiries}")
 
     # Display Credit-ninja Score and approval status
-    st.write(f"Your Credit-ninja Score: {ninja_score:.2f}")
+    st.write(f"Your CN Score: {ninja_score:.2f}")
     if ninja_score>700:
         st.success("Congratulations You are approved!")
         amorurl = 'https://www.creditninja.com/amortization-calculator/'
@@ -159,9 +159,9 @@ def main():
 
     # Add a JPG image to the Streamlit app
     image_path = "ninja.png"
-    st.image(image_path, caption='Credit Ninja', use_column_width=True)
+    st.image(image_path, caption='CreditN', use_column_width=True)
 
-    st.title("Credit Ninja")
+    st.title("CreditN")
     
 
     st.sidebar.title("Form:")
@@ -169,7 +169,7 @@ def main():
     # User input for name
     name = st.sidebar.text_input("What's your name?:")
     st.write(f"Hello, {name}, welcome to our site!")
-    msg = "Welcome to credit ninja platform were we evaluate your request for an installment credit in the matter of minutes." \
+    msg = "Welcome to creditN platform were we evaluate your request for an installment credit in the matter of minutes." \
           " We will utilize the fico score as one of our predictive inputs. No sociodemographic data is used in this evaluation " \
           "but just as informative for a better experience of our clients."
 
@@ -183,39 +183,45 @@ def main():
     #st.write(f"You selected a loan term of {loan_term} months.")
 
     loanamount = st.sidebar.number_input("Enter the loan amount you are looking for please:")
-    if loanamount>40000:
-        st.write(f"The maximum loan is 40000 USD, please input other value!")
-
     annual_income = st.sidebar.number_input("Enter your annual income:")
-    if annual_income<=20000 and annual_income>700000:
-        st.write(f"Please provide a valid input!")
 
-    # Display a button to submit the form
-    if st.button("Submit"):
-        st.success("We are looking at your credit history!")
+    if annual_income>0 and loanamount>0:
+        label = True
+        if loanamount > 40000:
+            label = False
+            st.write(f"The maximum loan is 40000 USD, please input other value!")
 
-        probabilities = [0.7, 0.1, 0.05, 0.05,0.05,0.05]
+        if annual_income <= 2000 and annual_income > 700000:
+            st.write(f"Please provide a valid input!")
+            label=False
 
-        # Use random.choices to select a value based on the probabilities
-        inquiries = random.choices([0, 1, 2, 3,5,7], weights=probabilities)[0]
+        # Display a button to submit the form
+    if label is True:
+        if st.button("Submit"):
+            st.success("We are looking at your credit history!")
 
-        if inquiries>2:
-            ficoscore = random.randint(600, 690)
-        if inquiries ==1:
-            ficoscore = random.randint(690, 720)
-        else:
-            ficoscore = random.randint(720, 850)
-        credit_score_months = random.randint(37, 852)
-        user_input = {'term': term,
-                      "last_fico_range_high": ficoscore,
-                      "months_since_earliest_cr_line": credit_score_months,
-                      "dti": random.uniform(0, 100),
-                      "inq_last_12m":inquiries
-                      }
+            probabilities = [0.7, 0.1, 0.05, 0.05,0.05,0.05]
 
-        out = evaluating(user_input)
-        #st.write(f"Results {out}")
-        custom_output(out)
+            # Use random.choices to select a value based on the probabilities
+            inquiries = random.choices([0, 1, 2, 3,5,7], weights=probabilities)[0]
+
+            if inquiries>2:
+                ficoscore = random.randint(600, 690)
+            if inquiries ==1:
+                ficoscore = random.randint(690, 720)
+            else:
+                ficoscore = random.randint(720, 850)
+            credit_score_months = random.randint(37, 852)
+            user_input = {'term': term,
+                          "last_fico_range_high": ficoscore,
+                          "months_since_earliest_cr_line": credit_score_months,
+                          "dti": random.uniform(0, 100),
+                          "inq_last_12m":inquiries
+                          }
+
+            out = evaluating(user_input)
+            #st.write(f"Results {out}")
+            custom_output(out)
 
 if __name__ == "__main__":
     main()
