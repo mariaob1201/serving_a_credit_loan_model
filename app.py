@@ -141,7 +141,7 @@ def custom_output(results):
     st.write(f"Number of Credit Inquiries in the Last 12 Months: {credit_inquiries}")
 
     # Display Credit-ninja Score and approval status
-    st.write(f"Your CN Score: {ninja_score:.2f}")
+    st.write(f"Your CN Score: {ninja_score:.0f}")
     if ninja_score>700:
         st.success("Congratulations You are approved!")
         amorurl = 'https://www.creditninja.com/amortization-calculator/'
@@ -207,7 +207,7 @@ def main():
 
             if inquiries>2:
                 ficoscore = random.randint(600, 690)
-            if inquiries ==1:
+            elif inquiries ==1:
                 ficoscore = random.randint(690, 720)
             else:
                 ficoscore = random.randint(720, 850)
