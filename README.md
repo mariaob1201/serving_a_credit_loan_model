@@ -1,7 +1,7 @@
 # Credit
 
 Welcome to the CreditN platform, where we make credit evaluations quick and seamless. Our platform leverages your FICO score and other key factors to provide you with an instant assessment of your installment credit request.
-[Online Evaluation]([https://github.com/your-username/your-project/issues](https://creditscoringsimulation.streamlit.app/))
+[Online Evaluation](https://creditscoringsimulation.streamlit.app/)
 
 ## Overview
 
