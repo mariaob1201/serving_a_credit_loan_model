@@ -196,7 +196,7 @@ def main():
             label=False
 
         # Display a button to submit the form
-    if label is True:
+    if label:
         if st.button("Submit"):
             st.success("We are looking at your credit history!")
 
