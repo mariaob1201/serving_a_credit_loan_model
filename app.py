@@ -95,8 +95,8 @@ def evaluating(user_input):
 
 
     # Find the minimum and maximum logistic scores in the test set
-    #min_logit_score = np.percentile(logit_scores_test,10)
-    #max_logit_score = np.percentile(logit_scores_test,90)
+    min_logit_score = -6
+    max_logit_score = 2 #np.percentile(logit_scores_test,90)
 
 
     # Logistic function to convert log-odds to probability
@@ -104,7 +104,7 @@ def evaluating(user_input):
 
 
     # Calculate the scaling factor
-    scaling_factor = 10 #calculate_scaling_factor(target_range[1] - target_range[0], logit_scores_test)
+    scaling_factor = 10 #calculate_scaling_factor(target_range[1] - target_range[0], logit_scores_test) #70
     print(f"scaling_factor  {scaling_factor}")
     # Convert logistic score to credit score using the scorecard
     credit_score = base_score + (scaling_factor * logit_score)
@@ -121,10 +121,27 @@ def evaluating(user_input):
     return output
 
 
-def custom_output(results):
+def custom_output(results, purpose, name):
     # Extract user input details
+    print('purpose ', purpose)
     user_input = results['Userinput']
     term = user_input['term']
+
+    def generate_random_number():
+        # Define the values and corresponding probabilities
+        values = [20, 50, random.uniform(50, 100)]
+        probabilities = [0.65, 0.25, 0.1]
+
+        # Generate a random number based on the defined probabilities
+        random_number = random.choices(values, probabilities)[0]
+
+        return random_number
+
+    # Example usage
+    result = generate_random_number()
+    print(result)
+
+    ratio = np.round(result,2)
     fico_score = user_input['last_fico_range_high']
     months_since_cr_line = user_input['months_since_earliest_cr_line']
     credit_inquiries = user_input['inq_last_12m']
@@ -136,6 +153,7 @@ def custom_output(results):
     # Display user input details
     st.write(f"Selected Term: {term} months")
     st.write(f"Last FICO Range High: {fico_score}")
+    st.write(f"Your last Debt-to-Income ratio is: {ratio}, {['High' if ratio>30 else ['Low' if ratio<10 else 'Good'][0]][0]}")
     st.write(
         f"Months Since Earliest Credit Line: {months_since_cr_line // 12} years and {months_since_cr_line % 12} months")
     st.write(f"Number of Credit Inquiries in the Last 12 Months: {credit_inquiries}")
@@ -143,14 +161,14 @@ def custom_output(results):
     # Display Credit-ninja Score and approval status
     st.write(f"Your CN Score: {ninja_score:.0f}")
     if ninja_score>700:
-        st.success("Congratulations You are approved!")
+        st.success(f"Congratulations {name} You are approved!")
         amorurl = 'https://www.creditninja.com/amortization-calculator/'
         st.markdown(f"Click [here]({amorurl}) to visit the amortization table in our website.")
+        st.write(f"You will be able to afford {purpose}.")
     else:
         st.success("Approval Status: We are sorry but we can not approve your request right now!")
 
-    # Display additional information if needed
-    st.write(f"Probability of Default: {results['Probability of default']:.4f}")
+        #st.write(f"Probability of Default: {results['Probability of default']:.4f}")
     #st.write(f"Logit Score: {results['logit_score']:.4f}")
 
 
@@ -167,8 +185,14 @@ def main():
     st.sidebar.title("Form:")
 
     # User input for name
-    name = st.sidebar.text_input("What's your name?:")
-    st.write(f"Hello, {name}, welcome to our site!")
+    name = st.sidebar.text_input("What's your name?")
+    purpose = st.sidebar.text_input("What is your purpose on using this loan?")
+    print('purpose ---', purpose)
+    if name:
+        regards = f"Hello, {name}, welcome to our site!"
+    else:
+        regards = 'Hello!'
+    st.write(f"{regards}")
     msg = "Welcome to creditN platform were we evaluate your request for an installment credit in the matter of minutes." \
           " We will utilize the fico score as one of our predictive inputs. No sociodemographic data is used in this evaluation " \
           "but just as informative for a better experience of our clients."
@@ -196,22 +220,22 @@ def main():
             label=False
 
         # Display a button to submit the form
-    if loanamount>0:
+    if loanamount > 0:
         if st.button("Submit"):
             st.write("We are looking at your credit history!")
 
-            probabilities = [0.6, 0.2, 0.05, 0.05,0.05,0.05]
+            probabilities = [0.6, 0.2, 0.05, 0.05,0.05,0.04,0.01]
 
             # Use random.choices to select a value based on the probabilities
-            inquiries = random.choices([0, 1, 2, 3,5,7], weights=probabilities)[0]
+            inquiries = random.choices([0, 1, 2, 3,5,7,10], weights=probabilities)[0]
 
             if inquiries>2:
-                ficoscore = random.randint(600, 690)
+                ficoscore = random.randint(550, 680)
             elif inquiries ==1:
-                ficoscore = random.randint(690, 720)
+                ficoscore = random.randint(680, 700)
             else:
-                ficoscore = random.randint(720, 850)
-            credit_score_months = random.randint(37, 50)
+                ficoscore = random.randint(700, 850)
+            credit_score_months = random.choices([37, 40, 45, 60, 80, 90,100], weights=probabilities)[0]
          
             user_input = {'term': term,
                           "last_fico_range_high": ficoscore,
@@ -222,7 +246,7 @@ def main():
 
             out = evaluating(user_input)
             #st.write(f"Results {out}")
-            custom_output(out)
+            custom_output(out, purpose, name)
 
 if __name__ == "__main__":
     main()
