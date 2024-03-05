@@ -164,7 +164,7 @@ def custom_output(results, purpose, name):
         st.success(f"Congratulations {name} You are approved!")
         amorurl = 'https://www.creditninja.com/amortization-calculator/'
         st.markdown(f"Click [here]({amorurl}) to visit the amortization table in our website.")
-        st.write(f"You will be able to afford {purpose}.")
+        st.write(f"You will be able to afford your goal already: {purpose}.")
     else:
         st.success("Approval Status: We are sorry but we can not approve your request right now!")
 
@@ -229,7 +229,7 @@ def main():
             # Use random.choices to select a value based on the probabilities
             inquiries = random.choices([0, 1, 2, 3,5,7,10], weights=probabilities)[0]
 
-            if inquiries>2:
+            if inquiries>=2:
                 ficoscore = random.randint(550, 680)
             elif inquiries ==1:
                 ficoscore = random.randint(680, 700)
