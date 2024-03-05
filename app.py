@@ -5,6 +5,8 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 import logging
+from datetime import datetime, timedelta
+
 
 dft = pd.read_csv('params/final_database_formodel.csv')
 
@@ -14,6 +16,64 @@ coefficients = {'last_fico_range_high': -0.9802881227926592,
          'dti': -0.5582188013544902,
          'inq_last_12m': -0.6154840377547729,
          'term': -0.8695614957308108}
+
+from geopy.geocoders import Nominatim
+my_list = ['Verified', 'Source Verified', 'Unverified']
+random_verif = random.choice(my_list)
+
+import pandas as pd
+
+
+import pandas as pd
+
+def calculate_amortization_table(loan_amount, annual_interest_rate, loan_term):
+    monthly_interest_rate = annual_interest_rate / 12 / 100
+    monthly_payment = (loan_amount * monthly_interest_rate) / (1 - (1 + monthly_interest_rate) ** -loan_term)
+
+    amortization_schedule = pd.DataFrame(columns=['Month', 'Payment', 'Principal', 'Interest', 'Remaining Balance'])
+
+    remaining_balance = loan_amount
+    current_date = datetime.now()
+
+    for month in range(1, loan_term + 1):
+        interest_payment = remaining_balance * monthly_interest_rate
+        principal_payment = monthly_payment - interest_payment
+        remaining_balance -= principal_payment
+
+        current_date += timedelta(days=30)  # Add approximately one month
+
+        row = {'No': month,
+               'Date': current_date.strftime("%Y-%m-%d"),
+               'Payment': monthly_payment,
+               'Principal': principal_payment,
+               'Interest': interest_payment,
+               'Remaining Balance': remaining_balance}
+
+        amortization_schedule = pd.concat([amortization_schedule, pd.DataFrame([row])], ignore_index=True)
+
+    return amortization_schedule
+
+
+
+def get_state_from_address(address):
+    geolocator = Nominatim(user_agent="state_emulator")
+
+    try:
+        location = geolocator.geocode(address, timeout=10)
+
+        if location and 'address' in location.raw:
+            state = location.raw['address'].get('state')
+            return state
+        else:
+            return None
+    except GeocoderTimedOut:
+        print("Error: Geocoding service timed out.")
+        return None
+    except GeocoderServiceError as e:
+        print(f"Error: {e}")
+        return None
+
+
 
 def calculate_scaling_factor(target_range, logistic_scores):
     logistic_score_range = np.max(logistic_scores) - np.min(logistic_scores)
@@ -104,7 +164,7 @@ def evaluating(user_input):
 
 
     # Calculate the scaling factor
-    scaling_factor = 10 #calculate_scaling_factor(target_range[1] - target_range[0], logit_scores_test) #70
+    scaling_factor = 28 #calculate_scaling_factor(target_range[1] - target_range[0], logit_scores_test) #70
     print(f"scaling_factor  {scaling_factor}")
     # Convert logistic score to credit score using the scorecard
     credit_score = base_score + (scaling_factor * logit_score)
@@ -121,7 +181,7 @@ def evaluating(user_input):
     return output
 
 
-def custom_output(results, purpose, name):
+def custom_output(results, purpose, name,loan_term, loan_amount):
     # Extract user input details
     print('purpose ', purpose)
     user_input = results['Userinput']
@@ -147,6 +207,25 @@ def custom_output(results, purpose, name):
     credit_inquiries = user_input['inq_last_12m']
     ninja_score = results['Credit-ninja Score']
 
+    #st.write(f"Your CN Score: {ninja_score:.0f}")
+    if ninja_score > 700:
+        st.success(f"Congratulations {name}, your CN Score is {ninja_score:.0f} and you are approved!")
+        #amorurl = 'https://www.creditninja.com/amortization-calculator/'
+        amortization_table = calculate_amortization_table(loan_amount, 8, loan_term)
+        download_button = st.download_button(label="Download Amortization Table as CSV",
+                                             data=amortization_table.to_csv(index=False),
+                                             file_name="my_amortization_table.csv")
+
+        # Optionally, you can display the download button conditionally
+        if download_button:
+            st.success("Download successful!")
+        #st.write(amortization_table)
+
+        #st.markdown(f"Click [here]({amorurl}) to visit the amortization table in our website.")
+        st.write(f"You will be able to afford your goal already: {purpose}.")
+    else:
+        st.error(f"Approval Status: We are sorry but we can not approve your request right now! Your CN Score is: {ninja_score:.0f}")
+
     # Display the summary
     st.title("Credit Approval Summary")
 
@@ -157,19 +236,13 @@ def custom_output(results, purpose, name):
     st.write(
         f"Months Since Earliest Credit Line: {months_since_cr_line // 12} years and {months_since_cr_line % 12} months")
     st.write(f"Number of Credit Inquiries in the Last 12 Months: {credit_inquiries}")
-
-    # Display Credit-ninja Score and approval status
-    st.write(f"Your CN Score: {ninja_score:.0f}")
-    if ninja_score>700:
-        st.success(f"Congratulations {name} You are approved!")
-        amorurl = 'https://www.creditninja.com/amortization-calculator/'
-        st.markdown(f"Click [here]({amorurl}) to visit the amortization table in our website.")
-        st.write(f"You will be able to afford your goal already: {purpose}.")
+    if 'Un' in random_verif:
+        st.write(f"Unverified income!")
     else:
-        st.success("Approval Status: We are sorry but we can not approve your request right now!")
-
-        #st.write(f"Probability of Default: {results['Probability of default']:.4f}")
-    #st.write(f"Logit Score: {results['logit_score']:.4f}")
+        if 'Source' in random_verif:
+            st.write(f"Your income source was verified!")
+        else:
+            st.write(f"Your income was verified!")
 
 
 def main():
@@ -177,15 +250,24 @@ def main():
 
     # Add a JPG image to the Streamlit app
     image_path = "ninja.png"
-    st.image(image_path, caption='CreditN', use_column_width=False)
+    st.image(image_path, caption='CreditN', width=100)
 
     st.title("CreditN")
-    
+
 
     st.sidebar.title("Form:")
 
     # User input for name
     name = st.sidebar.text_input("What's your name?")
+    address = st.sidebar.text_input("What is your address?")
+    # Example usage
+    #address = "1600 Amphitheatre Parkway, Mountain View, CA"
+    state = get_state_from_address(address)
+
+    if state:
+        st.write(f"We have a lot of customers from {state}!")
+    else:
+        print("Unable to determine the state for the given address.")
     purpose = st.sidebar.text_input("What is your purpose on using this loan?")
     print('purpose ---', purpose)
     if name:
@@ -200,7 +282,11 @@ def main():
     st.write(f"{msg}")
 
     # User input for loan term
-    loan_term = st.sidebar.slider("Select loan term (in months):", 12, 60, 36)
+    loan_term_s = st.sidebar.radio("Select loan term:", ["36 mo", "60 mo"])
+    loan_term = 36
+    if '60' in loan_term_s:
+        loan_term = 60
+    #st.sidebar.button("Select loan term (in months):", 12, 60, 36)
 
     term = [36 if loan_term<37 else 60][0]
 
@@ -208,6 +294,7 @@ def main():
 
     loanamount = st.sidebar.number_input("Enter the loan amount you are looking for please:")
     annual_income = st.sidebar.number_input("Enter your annual income:")
+
 
     if annual_income>0 and loanamount>0:
         label = True
@@ -236,7 +323,7 @@ def main():
             else:
                 ficoscore = random.randint(700, 850)
             credit_score_months = random.choices([37, 40, 45, 60, 80, 90,100], weights=probabilities)[0]
-         
+
             user_input = {'term': term,
                           "last_fico_range_high": ficoscore,
                           "months_since_earliest_cr_line": credit_score_months,
@@ -246,7 +333,7 @@ def main():
 
             out = evaluating(user_input)
             #st.write(f"Results {out}")
-            custom_output(out, purpose, name)
+            custom_output(out, purpose, name,term, loanamount)
 
 if __name__ == "__main__":
     main()

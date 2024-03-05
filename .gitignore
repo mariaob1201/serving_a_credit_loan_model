@@ -1,0 +1,9 @@
+# Ignore virtual environments
+venv/
+env/
+*.venv/
+*.env/
+
+# Ignore IDE files
+.idea/
+
