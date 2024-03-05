@@ -262,7 +262,7 @@ def main():
     address = st.sidebar.text_input("What is your address?")
     # Example usage
     #address = "1600 Amphitheatre Parkway, Mountain View, CA"
-    #state = address[-3:]
+    state = address[-3:]
 
     if state:
         st.write(f"We have a lot of customers from {state}!")
