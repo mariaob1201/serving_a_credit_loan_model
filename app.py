@@ -17,7 +17,7 @@ coefficients = {'last_fico_range_high': -0.9802881227926592,
          'inq_last_12m': -0.6154840377547729,
          'term': -0.8695614957308108}
 
-from geopy.geocoders import Nominatim
+#from geopy.geocoders import Nominatim
 my_list = ['Verified', 'Source Verified', 'Unverified']
 random_verif = random.choice(my_list)
 
@@ -56,7 +56,7 @@ def calculate_amortization_table(loan_amount, annual_interest_rate, loan_term):
 
 
 def get_state_from_address(address):
-    geolocator = Nominatim(user_agent="state_emulator")
+    #geolocator = Nominatim(user_agent="state_emulator")
 
     try:
         location = geolocator.geocode(address, timeout=10)
@@ -262,7 +262,7 @@ def main():
     address = st.sidebar.text_input("What is your address?")
     # Example usage
     #address = "1600 Amphitheatre Parkway, Mountain View, CA"
-    state = get_state_from_address(address)
+    #state = address[-3:]
 
     if state:
         st.write(f"We have a lot of customers from {state}!")
