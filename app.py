@@ -17,7 +17,7 @@ coefficients = {'last_fico_range_high': -0.9802881227926592,
          'inq_last_12m': -0.6154840377547729,
          'term': -0.8695614957308108}
 
-from geopy.geocoders import Nominatim
+#from geopy.geocoders import Nominatim
 my_list = ['Verified', 'Source Verified', 'Unverified']
 random_verif = random.choice(my_list)
 
@@ -56,7 +56,7 @@ def calculate_amortization_table(loan_amount, annual_interest_rate, loan_term):
 
 
 def get_state_from_address(address):
-    geolocator = Nominatim(user_agent="state_emulator")
+    #geolocator = Nominatim(user_agent="state_emulator")
 
     try:
         location = geolocator.geocode(address, timeout=10)
@@ -219,15 +219,13 @@ def custom_output(results, purpose, name,loan_term, loan_amount):
         # Optionally, you can display the download button conditionally
         if download_button:
             st.success("Download successful!")
-        #st.write(amortization_table)
-
         #st.markdown(f"Click [here]({amorurl}) to visit the amortization table in our website.")
         st.write(f"You will be able to afford your goal already: {purpose}.")
     else:
         st.error(f"Approval Status: We are sorry but we can not approve your request right now! Your CN Score is: {ninja_score:.0f}")
 
     # Display the summary
-    st.title("Credit Approval Summary")
+    st.title("Score Summary")
 
     # Display user input details
     st.write(f"Selected Term: {term} months")
