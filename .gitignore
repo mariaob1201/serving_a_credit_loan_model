@@ -4,7 +4,7 @@ venv/
 env/
 *.venv/
 *.env/
-
+myenv/
 # Ignore IDE files
 .idea/
 
