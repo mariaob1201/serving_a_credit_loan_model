@@ -148,7 +148,7 @@ def evaluating(user_input):
         woe_values[k] = woe
 
     # Base score and logistic regression score
-    base_score = 700
+    base_score = 650
     logit_score = sum(-woe_values[var] * coefficients[var] for var in user_input.keys())
 
     target_range = [600, 850]
@@ -164,7 +164,7 @@ def evaluating(user_input):
 
 
     # Calculate the scaling factor
-    scaling_factor = 30 #calculate_scaling_factor(target_range[1] - target_range[0], logit_scores_test) #70
+    scaling_factor = 22 #calculate_scaling_factor(target_range[1] - target_range[0], logit_scores_test) #70
     print(f"scaling_factor  {scaling_factor}")
     # Convert logistic score to credit score using the scorecard
     credit_score = base_score + (scaling_factor * logit_score)
@@ -180,22 +180,21 @@ def evaluating(user_input):
             "logit_score":logit_score}
     return output
 
+def generate_random_number():
+    # Define the values and corresponding probabilities
+    values = [20, 50, random.uniform(50, 100)]
+    probabilities = [0.65, 0.25, 0.1]
+
+    # Generate a random number based on the defined probabilities
+    random_number = random.choices(values, probabilities)[0]
+
+    return random_number
 
 def custom_output(results, purpose, name,loan_term, loan_amount):
     # Extract user input details
     print('purpose ', purpose)
     user_input = results['Userinput']
     term = user_input['term']
-
-    def generate_random_number():
-        # Define the values and corresponding probabilities
-        values = [20, 50, random.uniform(50, 100)]
-        probabilities = [0.65, 0.25, 0.1]
-
-        # Generate a random number based on the defined probabilities
-        random_number = random.choices(values, probabilities)[0]
-
-        return random_number
 
     # Example usage
     result = generate_random_number()
@@ -253,8 +252,6 @@ def main():
     st.image(image_path, caption='CreditN', width=100)
 
     st.title("CreditN")
-
-
     st.sidebar.title("Form:")
 
     # User input for name
