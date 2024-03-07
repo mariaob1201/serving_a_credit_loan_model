@@ -148,7 +148,7 @@ def evaluating(user_input):
         woe_values[k] = woe
 
     # Base score and logistic regression score
-    base_score = 650
+    base_score = 700
     logit_score = sum(-woe_values[var] * coefficients[var] for var in user_input.keys())
 
     target_range = [600, 850]
@@ -164,7 +164,7 @@ def evaluating(user_input):
 
 
     # Calculate the scaling factor
-    scaling_factor = 28 #calculate_scaling_factor(target_range[1] - target_range[0], logit_scores_test) #70
+    scaling_factor = 30 #calculate_scaling_factor(target_range[1] - target_range[0], logit_scores_test) #70
     print(f"scaling_factor  {scaling_factor}")
     # Convert logistic score to credit score using the scorecard
     credit_score = base_score + (scaling_factor * logit_score)
