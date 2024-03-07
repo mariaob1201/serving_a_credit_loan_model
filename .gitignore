@@ -7,4 +7,5 @@ env/
 myenv/
 # Ignore IDE files
 .idea/
+__pycache__/
 
