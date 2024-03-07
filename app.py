@@ -164,7 +164,7 @@ def evaluating(user_input):
 
 
     # Calculate the scaling factor
-    scaling_factor = 28 #calculate_scaling_factor(target_range[1] - target_range[0], logit_scores_test) #70
+    scaling_factor = 22 #calculate_scaling_factor(target_range[1] - target_range[0], logit_scores_test) #70
     print(f"scaling_factor  {scaling_factor}")
     # Convert logistic score to credit score using the scorecard
     credit_score = base_score + (scaling_factor * logit_score)
@@ -180,22 +180,21 @@ def evaluating(user_input):
             "logit_score":logit_score}
     return output
 
+def generate_random_number():
+    # Define the values and corresponding probabilities
+    values = [20, 50, random.uniform(50, 100)]
+    probabilities = [0.65, 0.25, 0.1]
+
+    # Generate a random number based on the defined probabilities
+    random_number = random.choices(values, probabilities)[0]
+
+    return random_number
 
 def custom_output(results, purpose, name,loan_term, loan_amount):
     # Extract user input details
     print('purpose ', purpose)
     user_input = results['Userinput']
     term = user_input['term']
-
-    def generate_random_number():
-        # Define the values and corresponding probabilities
-        values = [20, 50, random.uniform(50, 100)]
-        probabilities = [0.65, 0.25, 0.1]
-
-        # Generate a random number based on the defined probabilities
-        random_number = random.choices(values, probabilities)[0]
-
-        return random_number
 
     # Example usage
     result = generate_random_number()
@@ -251,8 +250,6 @@ def main():
     st.image(image_path, caption='CreditN', width=100)
 
     st.title("CreditN")
-
-
     st.sidebar.title("Form:")
 
     # User input for name
@@ -260,7 +257,7 @@ def main():
     address = st.sidebar.text_input("What is your address?")
     # Example usage
     #address = "1600 Amphitheatre Parkway, Mountain View, CA"
-    state = get_state_from_address(address)
+    state = address[-3:]
 
     if state:
         st.write(f"We have a lot of customers from {state}!")

@@ -1,6 +1,5 @@
 # Credit
-
-Welcome to the CreditN platform, where we make credit evaluations quick and seamless. Our platform leverages your FICO score and other key factors to provide you with an instant assessment of your installment credit request.
+This is a demo on a project I'm workin on related to credit scoring modeling. I serve the model in Streamlit simulating a credit evaluations platform with quick and seamless repsonses for an specific input, based on the credit model performed. The platform leverages a FICO score and the credit historical data (both RGN) to evaluate the probability of default of a potential customer. You can use the tool here and please dont hesitate to reach out if you have any feedback.
 [Online Evaluation](https://creditscoringsimulation.streamlit.app/)
 
 ## Overview
