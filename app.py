@@ -1,4 +1,3 @@
-import random
 from functions import *
 import streamlit as st
 
