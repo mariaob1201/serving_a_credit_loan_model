@@ -15,7 +15,7 @@ except Exception as e:
     logging.error(f"----------------------------------- The exception is {e}")
     dft = None
 
-st.write(dft)
+#st.write(dft)
 file_path = 'params/params.json'
 base_score = 600
 scaling_factor = 22

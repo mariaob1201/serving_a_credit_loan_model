@@ -1,41 +1,48 @@
 import random
-import streamlit as st
 from functions import *
-
-
-
 import streamlit as st
 
 
-def address_to_location(address):
+
+def get_geocode(address):
+    """
+      This function uses Nominatim to geocode an address.
+
+      Args:
+          address: The address string to geocode.
+
+      Returns:
+          A tuple containing latitude and longitude (or None if not found).
+    """
     try:
         from geopy.geocoders import Nominatim
-
-        geolocator = Nominatim(user_agent="location_app")
+        geolocator = Nominatim(user_agent="my_app")
         location = geolocator.geocode(address)
-        return location
+        if location:
+            return location.latitude, location.longitude
+        else:
+            return None
     except Exception as e:
         return None
 
-def addresstolocation(address):
+def address_to_location(address):
+    try:
+        # Get latitude and longitude from address
+        if address:
+            lat, lon = get_geocode(address)
 
-    if address:
-        # Convert address to location
-        location = address_to_location(address)
-
-        if location:
-            st.success(f"Location found for '{address}':")
-
-            # Create a DataFrame with explicit latitude and longitude columns
-            data = {'lat': [location.latitude], 'lon': [location.longitude]}
-            df = pd.DataFrame(data)
-
-            # Display the map with specified latitude and longitude columns
-            st.map(df, lat_column='lat', lon_column='lon')
-
-            st.write(f"Latitude: {location.latitude}, Longitude: {location.longitude}")
+            # Check if geocoding was successful
+            if lat and lon:
+                # Display map centered on the retrieved coordinates
+                st.map(latitude=lat, longitude=lon, zoom=15)
+                st.write(f"Coordinates: ({lat}, {lon})")
+            else:
+                st.write("Address not found.")
         else:
-            st.error(f"Unable to find location for '{address}'. Please enter a valid address.")
+            st.write("Please enter an address.")
+
+    except Exception as e:
+        return None
 
 
 def settings_customer():
@@ -81,6 +88,7 @@ def main():
     # User input for name, address, and purpose
     name = st.sidebar.text_input("What's your name?")
     address = st.sidebar.text_input("What is your address?")
+
     purpose = st.sidebar.text_input("What is your purpose for using this loan?")
 
     # Welcome message
@@ -90,7 +98,7 @@ def main():
         regards = 'Hello!'
     st.write(f"{regards}")
 
-    msg = "Welcome to CreditN platform where we evaluate your request for an installment credit in a matter of minutes." \
+    msg = "CreditN platform where we evaluate your request for an installment credit in a matter of seconds." \
           " We utilize the FICO score as one of our predictive inputs. No sociodemographic data is used in this evaluation " \
           "but just as informative for a better experience for our clients."
     st.write(f"{msg}")
@@ -105,7 +113,10 @@ def main():
 
     # Check loan and income conditions
     if annual_income > 0 and loanamount > 0:
-
+        try:
+            address_to_location(address)
+        except:
+            pass
         # Display a button to submit the form
         if st.button("Submit"):
             st.write("We are looking at your credit history!")
