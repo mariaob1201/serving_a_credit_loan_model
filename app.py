@@ -2,18 +2,20 @@ import random
 import streamlit as st
 from functions import *
 
-import streamlit as st
-from geopy.geocoders import Nominatim
+
 
 import streamlit as st
-from geopy.geocoders import Nominatim
 
 
 def address_to_location(address):
-    geolocator = Nominatim(user_agent="location_app")
-    location = geolocator.geocode(address)
-    return location
+    try:
+        from geopy.geocoders import Nominatim
 
+        geolocator = Nominatim(user_agent="location_app")
+        location = geolocator.geocode(address)
+        return location
+    except Exception as e:
+        return None
 
 def addresstolocation(address):
 
