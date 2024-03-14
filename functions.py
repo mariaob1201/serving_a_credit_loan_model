@@ -9,7 +9,7 @@ import logging
 
 # Read the CSV file
 try:
-    dft = pd.read_csv('params/final_database_formodel.csv')
+    dft = pd.read_csv('params/final_database_formodel.csv',error_bad_lines=False)
     print(f"Here reading the input ")
 except Exception as e:
     logging.error(f"----------------------------------- The exception is {e}")
