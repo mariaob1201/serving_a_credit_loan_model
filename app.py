@@ -98,6 +98,11 @@ def main():
         </style>
         """
 
+    #st.markdown(css_styles, unsafe_allow_html=True)
+    with open('styles.css', 'r') as css_file:
+        css_styles = css_file.read()
+
+    # Embed CSS styles using HTML
     st.markdown(f"<style>{css_styles}</style>", unsafe_allow_html=True)
 
     # User input for name, address, and purpose
