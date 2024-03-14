@@ -1,6 +1,0 @@
-random
-streamlit
-numpy
-pandas
-json
-geopy
