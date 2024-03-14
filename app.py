@@ -60,8 +60,6 @@ def settings_customer():
 
     return inquiries, credit_score_months, dti, ficoscore
 
-import streamlit as st
-
 def main():
     # Page title
     st.title("CreditN")
