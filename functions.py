@@ -4,11 +4,14 @@ import numpy as np
 import pandas as pd
 from datetime import datetime, timedelta
 import json
+import logger
 
 
 # Read the CSV file
-dft = pd.read_csv('params/final_database_formodel.csv')
-
+try:
+    dft = pd.read_csv('params/final_database_formodel.csv')
+except Exception as e:
+    logger.error(f"----------------------------------- The exception is {e}")
 file_path = 'params/params.json'
 base_score = 600
 scaling_factor = 22
