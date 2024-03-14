@@ -2,8 +2,6 @@ import random
 from functions import *
 import streamlit as st
 
-
-
 def get_geocode(address):
     """
       This function uses Nominatim to geocode an address.
@@ -15,6 +13,7 @@ def get_geocode(address):
           A tuple containing latitude and longitude (or None if not found).
     """
     try:
+        import geopy
         from geopy.geocoders import Nominatim
         geolocator = Nominatim(user_agent="my_app")
         location = geolocator.geocode(address)
