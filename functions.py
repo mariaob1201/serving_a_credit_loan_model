@@ -10,8 +10,11 @@ import logging
 # Read the CSV file
 try:
     dft = pd.read_csv('params/final_database_formodel.csv')
+    print(f"Here reading the input ")
 except Exception as e:
     logging.error(f"----------------------------------- The exception is {e}")
+    dft = None
+
 file_path = 'params/params.json'
 base_score = 600
 scaling_factor = 22
@@ -76,20 +79,23 @@ def calculate_scaling_factor(target_range, logistic_scores):
     return target_range / logistic_score_range
 
 def find_woe_for_value(input_value, column_name):
-    if column_name + '_bins' in dft.columns:
-        dframe = dft.groupby(column_name + '_bins')[column_name + '_WOE'].mean().reset_index()
-        dframe['low'] = dframe[column_name + '_bins'].apply(lambda x: float(x.split('-')[0][1:]) if '-0.01' not in x else 0.01)
-        dframe['upp'] = dframe[column_name + '_bins'].apply(lambda x: float(x.split('-')[1][:-1]) if '-0.01' not in x else 624)
-        result_row = dframe[dframe['upp'] > input_value]
-        result_row1 = result_row[result_row['low'] <= float(input_value)]
-        if len(result_row1) > 0:
-            r = result_row1[column_name + '_WOE'].values
-            return float(r[0])
+    if dft is not None:
+        if column_name + '_bins' in dft.columns:
+            dframe = dft.groupby(column_name + '_bins')[column_name + '_WOE'].mean().reset_index()
+            dframe['low'] = dframe[column_name + '_bins'].apply(lambda x: float(x.split('-')[0][1:]) if '-0.01' not in x else 0.01)
+            dframe['upp'] = dframe[column_name + '_bins'].apply(lambda x: float(x.split('-')[1][:-1]) if '-0.01' not in x else 624)
+            result_row = dframe[dframe['upp'] > input_value]
+            result_row1 = result_row[result_row['low'] <= float(input_value)]
+            if len(result_row1) > 0:
+                r = result_row1[column_name + '_WOE'].values
+                return float(r[0])
+            else:
+                return 0
         else:
+            print(f"The variable is not here")
             return 0
     else:
-        print(f"The variable is not here")
-        return 0
+        return -999
 
 def probability(input, coefficients):
     tot = 0
