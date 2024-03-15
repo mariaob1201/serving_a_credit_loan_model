@@ -33,7 +33,7 @@ def address_to_location(address):
             if lat and lon:
                 # Display map centered on the retrieved coordinates
                 st.map(latitude=lat, longitude=lon, zoom=15)
-                st.write(f"Coordinates: ({lat}, {lon})")
+                st.write("Coordinates:", lat, lon)
             else:
                 st.write("Address not found.")
         else:
@@ -77,11 +77,41 @@ def main():
     st.image(image_path, caption='CreditN', width=100)
 
     # Link to external CSS file
-    with open('styles.css', 'r') as css_file:
-        css_styles = css_file.read()
-
+    try:
+        with open('styles.css', 'r') as css_file:
+            css_styles = css_file.read()
+    except:
+        css_styles = """
+            </style>
+                body
+                {
+                    font - family: Arial, Helvetica, sans - serif;
+                }
+        
+                h1
+                {
+                    font - size: 2.5rem; / *Use
+                rem or em
+                for relative sizing * /
+                             font - weight: bold;
+                color:  # 007bff;
+                margin - bottom: 1.5
+                rem;
+                }
+        
+                h2
+                {
+                    font - size: 1.8rem;
+                font - weight: bold;
+                color:  # 333;
+                margin - bottom: 1
+                rem;
+                }
+            </style>
+        """
+    #print(css_styles)
     # Embed CSS styles using HTML
-    st.markdown(f"<style>{css_styles}</style>", unsafe_allow_html=True)
+    st.markdown(css_styles, unsafe_allow_html=True)
 
     # User input for name, address, and purpose
     name = st.sidebar.text_input("What's your name?")
@@ -91,15 +121,15 @@ def main():
 
     # Welcome message
     if name:
-        regards = f"Hello, {name}, welcome to our site!"
+        regards = "Hello" #f"Hello, {name}, welcome to our site!"
     else:
         regards = 'Hello!'
-    st.write(f"{regards}")
+    #st.write(f"{regards}")
 
     msg = "CreditN platform where we evaluate your request for an installment credit in a matter of seconds." \
           " We utilize the FICO score as one of our predictive inputs. No sociodemographic data is used in this evaluation " \
           "but just as informative for a better experience for our clients."
-    st.write(f"{msg}")
+    #st.write(f"{msg}")
 
     # User input for loan term, amount, and annual income
     loan_term_s = st.sidebar.radio("Select loan term:", ["36 mo", "60 mo"])
