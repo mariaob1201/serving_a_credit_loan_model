@@ -121,15 +121,15 @@ def main():
 
     # Welcome message
     if name:
-        regards = "Hello" #f"Hello, {name}, welcome to our site!"
+        regards = "Hello " + name+", welcome to our site!"
     else:
         regards = 'Hello!'
-    #st.write(f"{regards}")
+    st.write(regards)
 
     msg = "CreditN platform where we evaluate your request for an installment credit in a matter of seconds." \
           " We utilize the FICO score as one of our predictive inputs. No sociodemographic data is used in this evaluation " \
           "but just as informative for a better experience for our clients."
-    #st.write(f"{msg}")
+    st.write(msg)
 
     # User input for loan term, amount, and annual income
     loan_term_s = st.sidebar.radio("Select loan term:", ["36 mo", "60 mo"])
