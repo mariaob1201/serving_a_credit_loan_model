@@ -4,11 +4,18 @@ import numpy as np
 import pandas as pd
 from datetime import datetime, timedelta
 import json
+import logging
 
 
 # Read the CSV file
-dft = pd.read_csv('params/final_database_formodel.csv')
+try:
+    dft = pd.read_csv('params/final_database_formodel.csv')
+    print("OK")
+except Exception as e:
+    print('Exception ',e)
+    dft = None
 
+st.write(dft)
 file_path = 'params/params.json'
 base_score = 600
 scaling_factor = 22
@@ -65,7 +72,7 @@ def get_state_from_address(address):
         print("Error: Geocoding service timed out.")
         return None
     except GeocoderServiceError as e:
-        print(f"Error: {e}")
+        print("Error", e)
         return None
 
 def calculate_scaling_factor(target_range, logistic_scores):
@@ -73,20 +80,23 @@ def calculate_scaling_factor(target_range, logistic_scores):
     return target_range / logistic_score_range
 
 def find_woe_for_value(input_value, column_name):
-    if column_name + '_bins' in dft.columns:
-        dframe = dft.groupby(column_name + '_bins')[column_name + '_WOE'].mean().reset_index()
-        dframe['low'] = dframe[column_name + '_bins'].apply(lambda x: float(x.split('-')[0][1:]) if '-0.01' not in x else 0.01)
-        dframe['upp'] = dframe[column_name + '_bins'].apply(lambda x: float(x.split('-')[1][:-1]) if '-0.01' not in x else 624)
-        result_row = dframe[dframe['upp'] > input_value]
-        result_row1 = result_row[result_row['low'] <= float(input_value)]
-        if len(result_row1) > 0:
-            r = result_row1[column_name + '_WOE'].values
-            return float(r[0])
+    if dft is not None:
+        if column_name + '_bins' in dft.columns:
+            dframe = dft.groupby(column_name + '_bins')[column_name + '_WOE'].mean().reset_index()
+            dframe['low'] = dframe[column_name + '_bins'].apply(lambda x: float(x.split('-')[0][1:]) if '-0.01' not in x else 0.01)
+            dframe['upp'] = dframe[column_name + '_bins'].apply(lambda x: float(x.split('-')[1][:-1]) if '-0.01' not in x else 624)
+            result_row = dframe[dframe['upp'] > input_value]
+            result_row1 = result_row[result_row['low'] <= float(input_value)]
+            if len(result_row1) > 0:
+                r = result_row1[column_name + '_WOE'].values
+                return float(r[0])
+            else:
+                return 0
         else:
+            print("The variable is not here")
             return 0
     else:
-        print(f"The variable is not here")
-        return 0
+        return -999
 
 def probability(input, coefficients):
     tot = 0
@@ -152,23 +162,25 @@ def custom_output(results, purpose, name, loan_term, loan_amount):
         st.title("Credit Approval Summary")
 
         # Display user input details
-        st.write(f"Selected Term: {term} months")
-        st.write(f"Last FICO Range High: {fico_score}")
-        st.write(f"Your last Debt-to-Income ratio is: {ratio}, {['High' if ratio > 30 else ['Low' if ratio < 10 else 'Good'][0]][0]}")
-        st.write(f"Months Since Earliest Credit Line: {months_since_cr_line // 12} years and {months_since_cr_line % 12} months")
-        st.write(f"Number of Credit Inquiries in the Last 12 Months: {credit_inquiries}")
+        st.write("Selected Term: ",term, "months")
+        st.write("Last FICO Range High:",fico_score)
+        st.write("Your last Debt-to-Income ratio is:", ratio,
+                 ['High' if ratio > 30 else ['Low' if ratio < 10 else 'Good'][0]][0])
+        st.write("Months Since Earliest Credit Line:", months_since_cr_line // 12," years and ",
+                 months_since_cr_line % 12, "months")
+        st.write("Number of Credit Inquiries in the Last 12 Months: ", credit_inquiries)
 
         if 'Un' in random_verif:
-            st.write(f"Unverified income!")
+            st.write("Unverified income.")
         else:
             if 'Source' in random_verif:
-                st.write(f"Your income source was verified!")
+                st.write("Your income source was verified!")
             else:
-                st.write(f"Your income was verified!")
+                st.write("Your income was verified!")
 
         # Check if the user is approved based on the CN Score
         if ninja_score > 700:
-            st.success(f"Congratulations {name}, your CN Score is {ninja_score:.0f} and you are approved!")
+            st.success("Congratulations ", name, " your CN Score is ",np.round(ninja_score,0)," and you are approved!")
 
             # Generate and display amortization table
             amortization_table = calculate_amortization_table(loan_amount, 8, loan_term)
@@ -178,12 +190,13 @@ def custom_output(results, purpose, name, loan_term, loan_amount):
 
             # Display success message and download button
             st.write(f"You will be able to afford your goal: {purpose}.")
+
             if download_button:
                 st.success("Download successful!")
 
         else:
             # Display error message if the user is not approved
-            st.error(f"Approval Status: We are sorry but we cannot approve your request right now! Your CN Score is: {ninja_score:.0f}")
+            st.error("Approval Status: We are sorry but we cannot approve your request right now! Your CN Score is: {ninja_score:.0f}")
 
     except Exception as e:
-        print(f"Exception here {e}")
+        print("Exception here", e)
