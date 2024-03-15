@@ -12,12 +12,13 @@ def get_geocode(address):
           A tuple containing latitude and longitude (or None if not found).
     """
     try:
-        import geopy
-        from geopy.geocoders import Nominatim
-        geolocator = Nominatim(user_agent="my_app")
-        location = geolocator.geocode(address)
+        #import geopy
+        #from geopy.geocoders import Nominatim
+        #geolocator = Nominatim(user_agent="my_app")
+        location = 1
+        #geolocator.geocode(address)
         if location:
-            return location.latitude, location.longitude
+            return 1,1
         else:
             return None
     except Exception as e:
@@ -27,13 +28,14 @@ def address_to_location(address):
     try:
         # Get latitude and longitude from address
         if address:
-            lat, lon = get_geocode(address)
+            lat, lon = 1,1#get_geocode(address)
 
             # Check if geocoding was successful
             if lat and lon:
                 # Display map centered on the retrieved coordinates
-                st.map(latitude=lat, longitude=lon, zoom=15)
-                st.write("Coordinates:", lat, lon)
+                #st.map(latitude=lat, longitude=lon, zoom=15)
+                #st.write("Coordinates:", lat, lon)
+                pass
             else:
                 st.write("Address not found.")
         else:
@@ -162,3 +164,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    print("Ready!")
