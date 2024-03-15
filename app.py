@@ -14,6 +14,13 @@ def settings_customer(loan_term_s):
     return term, inquiries, credit_score_months, dti_r
 
 def main():
+    # Link to external CSS file
+    with open('styles.css', 'r') as css_file:
+        css_styles = css_file.read()
+
+    # Embed CSS styles using HTML
+    st.markdown(f"<style>{css_styles}</style>", unsafe_allow_html=True)
+    
     # Page title
     st.title("CreditN")
     st.sidebar.title("Form:")
@@ -21,12 +28,7 @@ def main():
     # Add a JPG image to the Streamlit app
     image_path = "ninja.png"
     st.image(image_path, caption='CreditN', width=100)
-    # Link to external CSS file
-    with open('styles.css', 'r') as css_file:
-        css_styles = css_file.read()
-
-    # Embed CSS styles using HTML
-    st.markdown(f"<style>{css_styles}</style>", unsafe_allow_html=True)
+    
     # User input for name, address, and purpose
     name = st.sidebar.text_input("What's your name?")
     address = st.sidebar.text_input("What is your address?")
