@@ -10,13 +10,14 @@ import json
 dft = pd.read_csv('params/final_database_formodel.csv')
 
 file_path = 'params/params.json'
-base_score = 600
-scaling_factor = 22
+
 
 # Read the JSON file and load its contents into a dictionary
 with open(file_path, 'r') as file:
     coefficients = json.load(file)
 
+base_score = coefficients["scales"]["base_score"]
+scaling_factor = coefficients["scales"]["scaling_factor"]
 
 my_list = ['Verified', 'Source Verified', 'Unverified']
 random_verif = random.choice(my_list)
