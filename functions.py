@@ -189,7 +189,8 @@ def custom_output(results, purpose, name, loan_term, loan_amount):
                                                  file_name="my_amortization_table.csv")
 
             # Display success message and download button
-            st.write("You will be able to afford your goal already:", purpose)
+            st.write(f"You will be able to afford your goal: {purpose}.")
+
             if download_button:
                 st.success("Download successful!")
 
