@@ -1,7 +1,16 @@
 import random
 import streamlit as st
 from functions import *
+from params.woes_ranges import *
+import joblib
+import numpy as np
+from sklearn.ensemble import RandomForestClassifier
 
+def find_woe(value, data):
+    for entry in data:
+        if entry["range"][0] <= value <= entry["range"][1]:
+            return entry["woe"]
+    return None  # o un valor por defecto si no se encuentra una coincidencia
 
 def settings_customer(loan_term_s):
     term = 36 if '60' not in loan_term_s else 60
@@ -85,14 +94,19 @@ def main():
                 dti = random.uniform(40, 100)
 
             # Create user input dictionary
-            user_input = {'term': term,
-                          "last_fico_range_high": ficoscore,
-                          "months_since_earliest_cr_line": credit_score_months,
-                          "dti": dti,
-                          "inq_last_12m": inquiries}
+            user_input = {'term': [2.67] if loan_term_s=="36 mo" else [2.19],
+                          "last_fico_range_high": [find_woe(ficoscore, fico_range_high_data)],
+                          "months_since_earliest_cr_line":
+                              [find_woe(credit_score_months, months_since_earliest_cr_line_data)],
+                          "dti": [find_woe(dti, dti_data)],
+                          "inq_last_12m": [find_woe(inquiries, inq_last_12m_data)]}
+
+            df_user_input = pd.DataFrame(user_input)
+            loaded_rf = joblib.load("model/random_forest.joblib")
 
             # Evaluate and display results
-            out = evaluating(user_input)
+            out = loaded_rf(df_user_input)
+            st.wriet(out)
             custom_output(out, purpose, name, term, loanamount)
 
 if __name__ == "__main__":
